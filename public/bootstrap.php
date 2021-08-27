@@ -2,21 +2,37 @@
 
 declare(strict_types=1);
 
-use Psr\Http\Message\ResponseInterface as Response;
-use Psr\Http\Message\ServerRequestInterface as Request;
-
 require __DIR__ . '/../vendor/autoload.php';
 
-$app = \DI\Bridge\Slim\Bridge::create();
+// load configuration
+$dotenv = new Symfony\Component\Dotenv\Dotenv();
+$dotenv
+    ->usePutenv(true)
+    ->loadEnv(__DIR__ . '/../.env');
 
+// init container
+$containerBuilder = new \DI\ContainerBuilder();
+$containerBuilder->addDefinitions(require_once __DIR__ . '/../configs/services.php');
+
+if (getenv('APP_ENV') === 'prod') {
+    $containerBuilder->enableCompilation(__DIR__ . '/../var/cache/container');
+}
+
+$container = $containerBuilder->build();
+
+// init app
+$app = \DI\Bridge\Slim\Bridge::create($container);
+
+// Add middlewares
+$app->add(new \Zeuxisoo\Whoops\Slim\WhoopsMiddleware([
+    'enable' => getenv('APP_ENV') !== 'prod',
+]));
+
+// configure routes
 $app->get(
     '/messenger/callback/{messenger}',
-    function (Request $request, Response $response, array $args) {
-        $name = $args['messenger'];
-        $response->getBody()->write("Hello, $name");
-
-        return $response;
-    }
+    [\Radiokey\MessengerControl\Controller\MessengerCallbackController::class, 'handle']
 );
 
+// start app
 $app->run();

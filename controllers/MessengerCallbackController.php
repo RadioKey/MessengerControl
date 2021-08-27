@@ -9,8 +9,13 @@ use Psr\Http\Message\ServerRequestInterface;
 
 class MessengerCallbackController
 {
-    public function handle(ServerRequestInterface $request, ResponseInterface $response): void
-    {
+    public function handle(
+        string $messenger,
+        ServerRequestInterface $request,
+        ResponseInterface $response
+    ): ResponseInterface {
+        $response->getBody()->write($messenger);
 
+        return $response;
     }
 }
