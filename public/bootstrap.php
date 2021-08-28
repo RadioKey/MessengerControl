@@ -2,6 +2,9 @@
 
 declare(strict_types=1);
 
+use Monolog\Handler\StreamHandler;
+use Monolog\Logger;
+
 require __DIR__ . '/../vendor/autoload.php';
 
 // load configuration
@@ -27,6 +30,13 @@ $app = \DI\Bridge\Slim\Bridge::create($container);
 $app->add(new \Zeuxisoo\Whoops\Slim\WhoopsMiddleware([
     'enable' => getenv('APP_ENV') !== 'prod',
 ]));
+
+$app->addErrorMiddleware(
+    false,
+    true,
+    true,
+    new Logger()
+);
 
 // configure routes
 $app->get(

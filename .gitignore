@@ -2,3 +2,5 @@
 .env.local
 /var/cache/container/*
 !/var/cache/container/.gitkeep
+/var/log/*
+!/var/log/.gitkeep

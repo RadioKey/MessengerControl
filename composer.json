@@ -2,13 +2,18 @@
     "name": "radiokey/messenger-control",
     "type": "project",
     "require": {
+        "php": ">=7.4",
+        "ext-json": "*",
         "radiokey/php-hub-client": "^0.1.0",
         "slim/slim": "^4.8",
         "symfony/dotenv": "^5.3",
         "php-di/slim-bridge": "^3.1",
         "longman/telegram-bot": "^0.74.0",
         "slim/psr7": "^1.4",
-        "zeuxisoo/slim-whoops": "^0.7.3"
+        "zeuxisoo/slim-whoops": "^0.7.3",
+        "psr/log": "^1.1",
+        "monolog/monolog": "^2.3",
+        "fig/http-message-util": "^1.1"
     },
     "license": "MIT",
     "autoload": {
