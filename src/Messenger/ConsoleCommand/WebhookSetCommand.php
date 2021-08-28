@@ -53,6 +53,11 @@ class WebhookSetCommand extends Command
                 );
 
                 $this->messengerClient->setWebhook($webHookUrl);
+            } else {
+                $output->writeln(
+                    '<info>Valid webhook already set</info>',
+                    OutputInterface::VERBOSITY_VERBOSE
+                );
             }
         } catch (\Throwable $e) {
             $output->writeln(

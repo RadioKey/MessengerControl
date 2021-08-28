@@ -60,7 +60,7 @@ class MessengerCallbackController
             ]
         );
 
-        // handle request
+        // parse request
         try {
             // parse JSON
             $requestBody = \json_decode($requestBody, true, 512, \JSON_THROW_ON_ERROR);
@@ -72,12 +72,22 @@ class MessengerCallbackController
             return $response;
         }
 
+        // build message
         try {
-
-            // build message
             // @todo: choose instance by $messenger
             $callbackMessage = $this->messengerClient->buildCallbackMessage($requestBody);
+        } catch (\Throwable $e) {
+            $this->logger->critical(
+                '[MessengerCallbackController] Can not build callback message: ' . $e->getMessage(),
+                [
+                    'exception' => $e,
+                ]
+            );
 
+            $response = $response->withStatus(StatusCodeInterface::STATUS_INTERNAL_SERVER_ERROR);
+        }
+
+        try {
             // handle message
             if ($callbackMessage->getText() === '/open') {
                 $this->hubClient->publishCommand(
@@ -90,12 +100,16 @@ class MessengerCallbackController
                         24
                     )
                 );
+
+                $this->messengerClient->sendMessage($callbackMessage->getChatId(), 'Command executed');
             }
 
             $response = $response->withStatus(StatusCodeInterface::STATUS_OK);
         } catch (\Throwable $e) {
+            $this->messengerClient->sendMessage($callbackMessage->getChatId(), 'Command execution failed');
+
             $this->logger->critical(
-                '[MessengerCallbackController] General Error: ' . $e->getMessage(),
+                '[MessengerCallbackController] MQTT Publish error: ' . $e->getMessage(),
                 [
                     'exception' => $e,
                 ]

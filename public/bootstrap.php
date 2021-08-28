@@ -38,7 +38,7 @@ if (getenv('APP_ENV') === 'prod') {
 }
 
 // configure routes
-$app->get(
+$app->post(
     '/messenger/callback/{messenger}',
     [\Radiokey\MessengerControl\Messenger\Controller\MessengerCallbackController::class, 'handle']
 );

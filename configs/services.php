@@ -9,15 +9,22 @@ use Psr\Container\ContainerInterface;
 return [
     'monolog.streamHandler' => factory(
         function (ContainerInterface $c) {
-            return new \Monolog\Handler\StreamHandler(
+            $streamHandler = new \Monolog\Handler\StreamHandler(
                 __DIR__ . '/../var/log/error.log',
                 \Monolog\Logger::DEBUG
             );
+
+            $lineFormatter = new \Monolog\Formatter\LineFormatter();
+            $lineFormatter->includeStacktraces(true);
+            $streamHandler->setFormatter($lineFormatter);
+
+            return $streamHandler;
         }
     ),
     \Psr\Log\LoggerInterface::class => factory(
         function (ContainerInterface $c) {
             $logger = new \Monolog\Logger('app');
+
             $logger->pushHandler($c->get('monolog.streamHandler'));
             return $logger;
         }
