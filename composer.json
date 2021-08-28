@@ -13,7 +13,8 @@
         "zeuxisoo/slim-whoops": "^0.7.3",
         "psr/log": "^1.1",
         "monolog/monolog": "^2.3",
-        "fig/http-message-util": "^1.1"
+        "fig/http-message-util": "^1.1",
+        "symfony/console": "^5.3"
     },
     "license": "MIT",
     "autoload": {

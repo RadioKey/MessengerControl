@@ -44,4 +44,19 @@ return [
             );
         }
     ),
+    \Symfony\Component\Console\Application::class => factory(
+        function (ContainerInterface $c) {
+            $application = new \Symfony\Component\Console\Application();
+            $application->setCommandLoader(
+                new \Symfony\Component\Console\CommandLoader\ContainerCommandLoader(
+                    $c,
+                    [
+                        'webhook:set' => \Radiokey\MessengerControl\Messenger\ConsoleCommand\WebhookSetCommand::class,
+                    ]
+                )
+            );
+
+            return $application;
+        }
+    ),
 ];
