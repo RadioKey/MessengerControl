@@ -55,8 +55,16 @@ class WebhookSetCommand extends Command
                 $this->messengerClient->setWebhook($webHookUrl);
             }
         } catch (\Throwable $e) {
-            $output->writeln(sprintf('<error>%s</error>', $e->getMessage()));
+            $output->writeln(
+                sprintf(
+                    '<error>Can not set webhook</error>: %s',
+                    $e->getMessage()
+                )
+            );
+
             return 1;
         }
+
+        return 0;
     }
 }

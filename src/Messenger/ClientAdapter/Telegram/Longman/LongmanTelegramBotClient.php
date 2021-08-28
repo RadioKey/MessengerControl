@@ -48,7 +48,11 @@ class LongmanTelegramBotClient implements MessengerClientInterface
                 'url' => $url,
             ]);
         } catch (\Throwable $e) {
-            throw new MessengerApiRequestException($e->getMessage(), $e->getCode(), $e);
+            throw new MessengerApiRequestException(
+                'Request error: ' . $e->getMessage(),
+                $e->getCode(),
+                $e
+            );
         }
 
         if (!$response->isOk()) {
