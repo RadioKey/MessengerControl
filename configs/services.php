@@ -1,19 +1,16 @@
 <?php
 
 use function DI\create;
+use function DI\autowire;
 use function DI\factory;
 use function DI\get;
 use Psr\Container\ContainerInterface;
-use Slim\App;
 
 return [
     'monolog.streamHandler' => factory(
         function (ContainerInterface $c) {
-            /** @var App $app */
-            $app = $c->get(App::class);
-
             return new \Monolog\Handler\StreamHandler(
-                $app->getBasePath() . '/var/log/error.log',
+                __DIR__ . '/../var/log/error.log',
                 \Monolog\Logger::DEBUG
             );
         }
@@ -24,5 +21,27 @@ return [
             $logger->pushHandler($c->get('monolog.streamHandler'));
             return $logger;
         }
-    )
+    ),
+    \Longman\TelegramBot\Telegram::class => factory(
+        function(ContainerInterface $c) {
+            return new Longman\TelegramBot\Telegram(
+                getenv('TELEGRAM_BOT_API_TOKEN'),
+                getenv('TELEGRAM_BOT_USERNAME'),
+            );
+        }
+    ),
+    \Radiokey\MessengerControl\Messenger\Client\MessengerClientInterface::class => autowire(
+        \Radiokey\MessengerControl\Messenger\ClientAdapter\Telegram\Longman\LongmanTelegramBotClient::class
+    ),
+    \RadioKey\HubClient\Mqtt\MqttCommandPublisherInterface::class => factory(
+        function (ContainerInterface $c) {
+            return new \RadioKey\HubClient\Mqtt\Adapter\Bluerhinos\BluerhinosMqttCommandPublisher(
+                getenv('MQTT_HOST'),
+                getenv('MQTT_PORT'),
+                getenv('MQTT_CLIENT_ID'),
+                getenv('MQTT_USER'),
+                getenv('MQTT_PASSWORD'),
+            );
+        }
+    ),
 ];

@@ -27,21 +27,23 @@ $container = $containerBuilder->build();
 $app = \DI\Bridge\Slim\Bridge::create($container);
 
 // Add middlewares
-$app->add(new \Zeuxisoo\Whoops\Slim\WhoopsMiddleware([
-    'enable' => getenv('APP_ENV') !== 'prod',
-]));
-
-$app->addErrorMiddleware(
-    false,
-    true,
-    true,
-    new Logger()
-);
+if (getenv('APP_ENV') === 'prod') {
+    $app->addErrorMiddleware(
+        false,
+        true,
+        true,
+        $container->get(\Psr\Log\LoggerInterface::class)
+    );
+} else {
+    $app->add(new \Zeuxisoo\Whoops\Slim\WhoopsMiddleware([
+        'enable' => true,
+    ]));
+}
 
 // configure routes
 $app->get(
     '/messenger/callback/{messenger}',
-    [\Radiokey\MessengerControl\Controller\MessengerCallbackController::class, 'handle']
+    [\Radiokey\MessengerControl\Messenger\Controller\MessengerCallbackController::class, 'handle']
 );
 
 // start app
