@@ -20,12 +20,12 @@ class CallbackMessage
     /**
      * Sender, empty for messages sent to channels
      *
-     * @var string
+     * @var string|null
      */
     private $userId;
 
     /**
-     * @var string
+     * @var string|null
      */
     private $userName;
 
@@ -36,11 +36,11 @@ class CallbackMessage
 
     /**
      * @param string $chatId
-     * @param string $userId
-     * @param string $userName
+     * @param string|null $userId
+     * @param string|null $userName
      * @param string $text
      */
-    public function __construct(string $chatId, string $userId, string $userName, string $text)
+    public function __construct(string $chatId, ?string $userId, ?string $userName, string $text)
     {
         $this->chatId = $chatId;
         $this->userId = $userId;
@@ -57,17 +57,17 @@ class CallbackMessage
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getUserId(): string
+    public function getUserId(): ?string
     {
         return $this->userId;
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getUserName(): string
+    public function getUserName(): ?string
     {
         return $this->userName;
     }

@@ -125,8 +125,8 @@ class LongmanTelegramBotClient implements MessengerClientInterface
 
         return new CallbackMessage(
             (string) $message->getChat()->getId(),
-            (string) $message->getFrom()->getId(),
-            $message->getFrom()->getFirstName(),
+            $message->getFrom() ? (string) $message->getFrom()->getId() : null,
+            $message->getFrom() ? $message->getFrom()->getFirstName() : null,
             $message->getText()
         );
     }
