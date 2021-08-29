@@ -64,8 +64,6 @@ interface MessengerClientInterface
      *
      * @param string $chatId Unique identifier for the target chat or username of the target channel (in the format @channelusername)
      * @param string $text Text of the message to be sent
-     *
-     * @return CallbackMessage
      */
-    public function sendMessage(string $chatId, string $text): CallbackMessage;
+    public function sendMessage(string $chatId, string $text): void;
 }

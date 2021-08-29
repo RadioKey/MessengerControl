@@ -144,7 +144,7 @@ class LongmanTelegramBotClient implements MessengerClientInterface
      * @throws MessengerApiRequestException
      * @throws MessengerApiResponseException
      */
-    public function sendMessage(string $chatId, string $text): CallbackMessage
+    public function sendMessage(string $chatId, string $text): void
     {
         try {
             $response = Request::sendMessage([
@@ -159,15 +159,5 @@ class LongmanTelegramBotClient implements MessengerClientInterface
         if (!$response->isOk()) {
             throw new MessengerApiResponseException($response->getDescription());
         }
-
-        /** @var \Longman\TelegramBot\Entities\Message $message */
-        $message = $response->getResult();
-
-        return new CallbackMessage(
-            (string) $message->getChat()->getId(),
-            (string) $message->getFrom()->getId(),
-            $message->getFrom()->getFirstName(),
-            $message->getText()
-        );
     }
 }
