@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Radiokey\MessengerControl\Messenger\ClientAdapter\Telegram\Longman;
 
+use Longman\TelegramBot\Entities\Message;
 use Longman\TelegramBot\Telegram;
 use Longman\TelegramBot\Request;
 use Longman\TelegramBot\Entities\Update as LongmanTelegramBotUpdate;
@@ -112,7 +113,7 @@ class LongmanTelegramBotClient implements MessengerClientInterface
      *
      * @throws MessengerServerRequestException
      */
-    public function buildCallbackMessage(array $updateData): CallbackMessage
+    public function buildCallbackMessage(array $updateData): ?CallbackMessage
     {
         try {
             $update = new LongmanTelegramBotUpdate($updateData);
@@ -120,15 +121,18 @@ class LongmanTelegramBotClient implements MessengerClientInterface
             throw new MessengerServerRequestException('Can not create Update object');
         }
 
-        /** @var \Longman\TelegramBot\Entities\Message $message */
         $message = $update->getUpdateContent();
 
-        return new CallbackMessage(
-            (string) $message->getChat()->getId(),
-            $message->getFrom() ? (string) $message->getFrom()->getId() : null,
-            $message->getFrom() ? $message->getFrom()->getFirstName() : null,
-            $message->getText()
-        );
+        if ($message instanceof Message) {
+            return new CallbackMessage(
+                (string) $message->getChat()->getId(),
+                $message->getFrom() ? (string) $message->getFrom()->getId() : null,
+                $message->getFrom() ? $message->getFrom()->getFirstName() : null,
+                $message->getText()
+            );
+        } else {
+            return null;
+        }
     }
 
     /**

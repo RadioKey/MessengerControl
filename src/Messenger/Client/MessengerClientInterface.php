@@ -56,7 +56,7 @@ interface MessengerClientInterface
      *
      * @throws MessengerApiRequestException
      */
-    public function buildCallbackMessage(array $updateData): CallbackMessage;
+    public function buildCallbackMessage(array $updateData): ?CallbackMessage;
 
     /**
      * For Telegram:

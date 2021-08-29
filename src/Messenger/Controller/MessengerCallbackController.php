@@ -76,6 +76,10 @@ class MessengerCallbackController
         try {
             // @todo: choose instance by $messenger
             $callbackMessage = $this->messengerClient->buildCallbackMessage($requestBody);
+
+            if (empty($callbackMessage)) {
+                return $response->withStatus(StatusCodeInterface::STATUS_OK);
+            }
         } catch (\Throwable $e) {
             $this->logger->critical(
                 '[MessengerCallbackController] Can not build callback message: ' . $e->getMessage(),
@@ -84,7 +88,7 @@ class MessengerCallbackController
                 ]
             );
 
-            $response = $response->withStatus(StatusCodeInterface::STATUS_INTERNAL_SERVER_ERROR);
+            return $response->withStatus(StatusCodeInterface::STATUS_INTERNAL_SERVER_ERROR);
         }
 
         try {
