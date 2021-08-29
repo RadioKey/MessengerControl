@@ -68,8 +68,7 @@ class MessengerCallbackController
                 throw new \InvalidArgumentException('Invalid JSON');
             }
         } catch (\Throwable $e) {
-            $response = $response->withStatus(StatusCodeInterface::STATUS_BAD_REQUEST);
-            return $response;
+            return $response->withStatus(StatusCodeInterface::STATUS_BAD_REQUEST);
         }
 
         // build message
@@ -78,6 +77,7 @@ class MessengerCallbackController
             $callbackMessage = $this->messengerClient->buildCallbackMessage($requestBody);
 
             if (empty($callbackMessage)) {
+                // system message obtained
                 return $response->withStatus(StatusCodeInterface::STATUS_OK);
             }
         } catch (\Throwable $e) {
@@ -88,12 +88,12 @@ class MessengerCallbackController
                 ]
             );
 
-            return $response->withStatus(StatusCodeInterface::STATUS_INTERNAL_SERVER_ERROR);
+            return $response->withStatus(StatusCodeInterface::STATUS_OK);
         }
 
-        try {
-            // handle message
-            if ($callbackMessage->getText() === '/open') {
+        if ($callbackMessage->getText() === '/open') {
+            try {
+                // handle message
                 $this->hubClient->publishCommand(
                     getenv('HUB_ADDRESS'),
                     new SendCommand(
@@ -106,22 +106,21 @@ class MessengerCallbackController
                 );
 
                 $this->messengerClient->sendMessage($callbackMessage->getChatId(), 'Command executed');
+            } catch (\Throwable $e) {
+                $this->messengerClient->sendMessage(
+                    $callbackMessage->getChatId(),
+                    'Command execution failed: ' . $e->getMessage()
+                );
+
+                $this->logger->critical(
+                    '[MessengerCallbackController] MQTT Publish error: ' . $e->getMessage(),
+                    [
+                        'exception' => $e,
+                    ]
+                );
             }
-
-            $response = $response->withStatus(StatusCodeInterface::STATUS_OK);
-        } catch (\Throwable $e) {
-            $this->messengerClient->sendMessage($callbackMessage->getChatId(), 'Command execution failed');
-
-            $this->logger->critical(
-                '[MessengerCallbackController] MQTT Publish error: ' . $e->getMessage(),
-                [
-                    'exception' => $e,
-                ]
-            );
-
-            $response = $response->withStatus(StatusCodeInterface::STATUS_INTERNAL_SERVER_ERROR);
         }
 
-        return $response;
+        return $response->withStatus(StatusCodeInterface::STATUS_OK);
     }
 }
