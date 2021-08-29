@@ -104,6 +104,10 @@ class MessengerCallbackController
                         24
                     )
                 );
+
+                try {
+                    $this->messengerClient->sendMessage($callbackMessage->getChatId(), 'Command executed');
+                } catch (\Throwable $e) {}
             } catch (\Throwable $e) {
                 $this->messengerClient->sendMessage(
                     $callbackMessage->getChatId(),
@@ -118,8 +122,6 @@ class MessengerCallbackController
                 );
             }
         }
-
-        $this->messengerClient->sendMessage($callbackMessage->getChatId(), 'Command executed');
 
         return $response->withStatus(StatusCodeInterface::STATUS_OK);
     }
